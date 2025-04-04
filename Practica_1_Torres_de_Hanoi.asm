@@ -10,7 +10,7 @@ main:
 
 for:
     slt t1, t0, a0 # for(int i = 0; i < 3; i++)
-    beq t1, zero, startHanoi # Si i >= 3, salta a startHanoi
+    beq t1, zero, startHanoi # Si i == 0, salta a startHanoi
     addi t2, t0, 1 # Guardamos el valor del disco a colocar // t2 = i + 1;
     sw t2, 0(s2) # Guarda el disco en el nivel actual de la torre
     sw zero, 0(s3) # Nos aseguramos que las columnas estén vacías
