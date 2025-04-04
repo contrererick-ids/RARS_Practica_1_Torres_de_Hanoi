@@ -1,4 +1,6 @@
 # Practica 1 Torres de Hanoi
+# León Blanco David Rodrigo
+# Contreras Salas Erick Alejandro
 
 .text
 main:
