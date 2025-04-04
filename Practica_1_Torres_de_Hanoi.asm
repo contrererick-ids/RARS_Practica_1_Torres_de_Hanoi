@@ -1,5 +1,5 @@
 # Practica 1 Torres de Hanoi
-# Le�n Blanco David Rodrigo
+# León Blanco David Rodrigo
 # Contreras Salas Erick Alejandro
 
 .text
@@ -42,9 +42,9 @@ hanoiTower:
     
     addi sp, sp, -20 #Reservamos espacio en el stack
     sw ra, 0(sp) # Guardamos el valor de retorno
-    sw t4, 4(sp) # Guardamos n, o sea el número de disco, en sp+4
+    sw t4, 4(sp) # Guardamos n en sp+4
     sw s5, 8(sp) # Guardamos la dirección de inicio de la torre A en el sp+8 (origen)
-    sw s6, 12(sp) # Guardamos la dirección de inicio de la torre B en el sp+12 (auxiliar)
+    sw s6, 12(sp) # Guardamos la dirección de inicio de la torre A en el sp+8 (origen)
     sw s7, 16(sp) # Guardamos la dirección de inicio de la torre C en el sp+16 (destino)
     
     addi t4, t4, -1 # Reducimos n en 1 // n -= 1;
@@ -54,27 +54,28 @@ hanoiTower:
     jal ra hanoiTower
     j hanoiFor
 
-
 hanoiFor:
-    # 1) Restaurar n, torres
-    lw t4, 4(sp)
-    lw s5, 8(sp)
-    lw s6, 12(sp)
-    lw s7, 16(sp)
+    lw t4, 4(sp) # Guardamos en t4 el valor de n
+    lw s5, 8(sp) # Guardamos en s5 la dirección de inicio de la actual torre origen
+    lw s6, 12(sp) # Guardamos en s6 la dirección de inicio de la actual torre auxiliar
+    lw s7, 16(sp) # Guardamos en s7 la dirección de inicio de la actual torre destino
 
-    # 2) Mover disco n de origen(s5) a destino(s7)
-    lw t1, 0(s5)
-    sw t1, 0(s7)
-    sw zero, 0(s5)
-
-    # 3) hanoi(n-1, B, C, A)
+findFirstTop:
+    lw t1, 0(s5) # Guardamos en t1 la dirección actual de la torre origen
+    addi t2, s5, 32 # Usando t2 calculamos el siguiente nivel de la torre origen hacia abajo
+    lw t3, 0(t2) # Guardamos en t3 el disco o valor encontrado en la dirección de t2
+    beq t3, zero, findFirstEmpty # Comparamos si ya no hay más discos por guardar y saltamos a encontrar dónde guardaremos el disco actual en la torre destino
+    addi s5, s5, 32 # Apuntamos s5 al siguiente nivel de la torre para recorrerla hacia abajo
+    j findFirstTop
+    
+findFirstEmpty:
+    
     addi t4, t4, -1
     addi a0, t4, 0
     addi t5, s5, 0
     addi s5, s6, 0
     addi s6, s7, 0
     addi s7, t5, 0
-
     jal ra, hanoiTower
 
     # 5) Recuperar ra, stack, ret
