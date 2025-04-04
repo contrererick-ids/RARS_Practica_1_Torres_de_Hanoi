@@ -52,6 +52,7 @@ hanoiTower:
     addi s6, s7, 0 # Guardamos la torre destino donde estaba la auxiliar
     addi s7, t5, 0 # Guardamos la torre auxiliar donde estaba destino
     jal ra hanoiTower
+    
     j hanoiFor
 
 hanoiFor:
@@ -61,21 +62,27 @@ hanoiFor:
     lw s7, 16(sp) # Guardamos en s7 la dirección de inicio de la actual torre destino
 
 findFirstTop:
-    lw t1, 0(s5) # Guardamos en t1 la dirección actual de la torre origen
-    addi t2, s5, 32 # Usando t2 calculamos el siguiente nivel de la torre origen hacia abajo
-    lw t3, 0(t2) # Guardamos en t3 el disco o valor encontrado en la dirección de t2
-    beq t3, zero, findFirstEmpty # Comparamos si ya no hay más discos por guardar y saltamos a encontrar dónde guardaremos el disco actual en la torre destino
+    lw t1, 0(s5) # Guardamos en t1 la dirección de la actual torre origen
+    beq t1, zero, findFirstEmpty # Comparamos si ya no hay más discos por guardar y saltamos a encontrar dónde guardaremos el disco actual en la torre destino
     addi s5, s5, 32 # Apuntamos s5 al siguiente nivel de la torre para recorrerla hacia abajo
-    j findFirstTop
+    j findFirstTopl
+    lw s5, 8(sp) # VALIDAR SI ESTO ESTÁ CORRECTO-------------------------------------------------------------------------------------------------------------------
     
+###ESTA PARTE ESTÁ INCOMPLETA, FALTA VALIDAR CON 64(S7) EN VEZ DE CON 0(S7) YA QUE TIENE QUE VER QUE LA BASE ESTÉ VACÍA EN VEZ DEL TOPE###
 findFirstEmpty:
+    lw t1, 0(s7) # Guardamos en t1 la dirección de la actual torre destino
+    beq t1, zero, moveDisk # Comparamos si la dirección inicial de la torre destinoe esta vacía 
+    addi s7, s7, 32 # Apuntamos s7 al siguiente nivel de la torre para recorrerla hacia abajo
+    j findFirstEmpty
     
-    addi t4, t4, -1
-    addi a0, t4, 0
-    addi t5, s5, 0
-    addi s5, s6, 0
-    addi s6, s7, 0
-    addi s7, t5, 0
+###ESTA PARTE TAMBIÉN ESTÁ INCOMPLETA, FALTA IMPLEMENTAR EL MOVIMIENTO DEL DISCO UNA VEZ ENCONTRAMOS LA BASE VACÍA EN LA FUNC ANTERIOR
+moveDisk:
+    
+    addi t4, t4, -1 # Reducimos n en 1 // n -= 1;
+    addi t5, s5, 0 # Guardamos en t5 la torre origen
+    addi s5, s6, 0 # Guardamos la torre auxiliar donde estaba la origen
+    addi s6, s7, 0 # Guardamos la torre destino donde estaba la auxiliar
+    addi s7, t5, 0 # Guardamos la torre origen donde estaba la destino
     jal ra, hanoiTower
 
     # 5) Recuperar ra, stack, ret
@@ -87,4 +94,4 @@ hanoiEnd:
     ret
 
 exit:
-    nop # Fin del programa
+    nop
