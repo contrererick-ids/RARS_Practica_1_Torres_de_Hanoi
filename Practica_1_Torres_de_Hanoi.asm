@@ -24,13 +24,53 @@ initialPosition:
     bne  s0, zero, initialPosition # Volvemos a llamar a la función mientras queden discos por colocar
     add  s0, t2, s0 # Recuperamos el valor de n guardándolo en s0
     jalr ra # Volvemos a la siguiente instrucción por ejecutar antes de la llamada a initialPosition
-
+	
+HanoiTowers:
+    addi sp, sp, -8 # Reserva espacio en la pila para guardar la dirección de la torre y el valor de n
+    sw   ra, 4(sp) # Guarda la dirección de retorno en la pila
+    addi t3, zero, 1 # Prepara t3 con el valor 1 para verificar el caso base
+    beq  s0, t3, BaseCase # Si n == 1, salta a BaseCase
+    addi s0, s0, -1 # Si n es mayor a 1 se le resta 1
+    sw   s0, 0(sp) # Guarda el nuevo valor de n en la pila
+    add  a4, a2, zero # Copia en a4 la dirección de la torre destino
+    add  a2, a1, zero # Intercambia: la torre auxiliar pasa a a2
+    add  a1, a4, zero # Intercambia: la torre destino original pasa a a1
+    jal  HanoiTowers # Llamada recursiva con n-1 discos
+	
+    lw   s0, 0(sp) # Recupera n de la pila
+    lw   ra, 4(sp) # Recupera la dirección de retorno
+    add  a4, a2, zero # Copia la torre auxiliar en a4
+    add  a2, a1, zero # Intercambia: la torre destino se asigna a a2
+    add  a1, a4, zero # Intercambia: la torre auxiliar original se asigna a a1
+    
+    lw   a5, 0(s1) # Carga en a5 el disco superior de la torre origen
+    sw   zero, 0(s1) # Elimina el disco de la torre origen (pone 0)
+    addi s1, s1, -32 # Ajusta s1 para apuntar al siguiente disco en la torre origen
+    addi a2, a2, 32 # Apunta a un espacio disponible en la otra torre
+    sw   a5, 0(a2) # Almacena el disco en la torre auxiliar/destino
+    
+    add  a4, s1, zero # Copia la dirección actual de la torre origen en a4
+    add  s1, a1, zero # Intercambia: la torre auxiliar pasa a s1
+    add  a1, a4, zero # Intercambia: la torre origen pasa a a1
+    jal  HanoiTowers # Llama recursivamente para seguir con el resto de discos
+    
+    add  a4, s1, zero # Copia la torre auxiliar en a4
+    add  s1, a1, zero # La torre origen se asigna a s1
+    add  a1, a4, zero # La torre auxiliar original vuelve a a1
+    jal  nextMovement # Salta para realizar el siguiente movimiento
+	
 BaseCase:
     lw   a5, 0(s1) # Carga en a5 el disco superior de la torre origen
     sw   zero, 0(s1) # Elimina ese disco de la torre origen
     addi s1, s1, -32 # Ajusta el apuntador de la torre origen al siguiente disco
     addi a2, a2, 32 # Desplaza el apuntador de la torre destino para colocar el disco
     sw   a5, 0(a2) # Coloca el disco en la torre destino
-
+	
+nextMovement:
+    lw   s0, 0(sp) # Recupera el valor de n de la pila
+    lw   ra, 4(sp) # Recupera la dirección de retorno
+    addi sp, sp, 8 # Restaura el puntero de pila
+    jalr ra # Retorna para continuar la ejecución previa
+	
 exit:
     nop
