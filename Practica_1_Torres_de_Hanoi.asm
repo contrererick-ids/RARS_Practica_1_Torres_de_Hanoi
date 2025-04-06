@@ -24,3 +24,13 @@ initialPosition:
     bne  s0, zero, initialPosition # Volvemos a llamar a la función mientras queden discos por colocar
     add  s0, t2, s0 # Recuperamos el valor de n guardándolo en s0
     jalr ra # Volvemos a la siguiente instrucción por ejecutar antes de la llamada a initialPosition
+
+BaseCase:
+    lw   a5, 0(s1) # Carga en a5 el disco superior de la torre origen
+    sw   zero, 0(s1) # Elimina ese disco de la torre origen
+    addi s1, s1, -32 # Ajusta el apuntador de la torre origen al siguiente disco
+    addi a2, a2, 32 # Desplaza el apuntador de la torre destino para colocar el disco
+    sw   a5, 0(a2) # Coloca el disco en la torre destino
+
+exit:
+    nop
